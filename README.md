@@ -5,7 +5,7 @@ primarily came about as I could not ind a mod that achieved quite what I wanted 
 sneak button to grow crops, trees, and sugarcane. Thus, I created this mod and decided it would be fun to add a few 
 particle and sound effects to the idea to go with the "fartilizing" theme! 
 
-> Please read the notes below in **Modpacks & Distribution**regarding usage in modpacks and forking.
+> Please read the notes below in **Modpacks & Distribution** regarding usage in modpacks and forking.
 
 ---
 
