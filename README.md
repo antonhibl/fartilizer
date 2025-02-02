@@ -20,7 +20,7 @@ particle and sound effects to the idea to go with the "fartilizing" theme!
 
 ## Modpacks & Distribution
 
-You **may include this mod in a modpack**, provided you **credit the creator (antonhibl or kushcola)** visibly and 
+You **may include this mod in a modpack**, provided you **credit the creator (kuzhcola)** visibly and 
 prominently.**Do not redistribute this mod as your own**, as it is the creator’s **intellectual property**. See the 
 license for further clarification & information.
 
@@ -43,4 +43,4 @@ in modpacks.
 
 > **Note:** The above license section is written to explicitly communicate the author’s intellectual property
 > requirements. The mod should not be used in modpacks without properly crediting the author; it also shouldn't be
-> forked without crediting the original author, Anton Hibl or 'kushcola'.
+> forked without crediting the original author, kuzhcola.

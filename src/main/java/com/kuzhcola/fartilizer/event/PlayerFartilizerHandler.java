@@ -1,6 +1,6 @@
-package com.kushcola.fartilizer.event;
+package com.kuzhcola.fartilizer.event;
 
-import com.kushcola.fartilizer.Config;
+import com.kuzhcola.fartilizer.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;

@@ -1,7 +1,7 @@
-package com.kushcola.fartilizer;
+package com.kuzhcola.fartilizer;
 
 import com.mojang.logging.LogUtils;
-import com.kushcola.fartilizer.event.PlayerFartilizerHandler;
+import com.kuzhcola.fartilizer.event.PlayerFartilizerHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;

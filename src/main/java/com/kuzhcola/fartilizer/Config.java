@@ -1,4 +1,4 @@
-package com.kushcola.fartilizer;
+package com.kuzhcola.fartilizer;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
