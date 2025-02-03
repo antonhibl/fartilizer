@@ -24,6 +24,7 @@ public class Config {
     public static final ForgeConfigSpec.BooleanValue WEEPING_VINES_ENABLED;
     public static final ForgeConfigSpec.BooleanValue TWISTING_VINES_ENABLED;
     public static final ForgeConfigSpec.BooleanValue NETHER_WART_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue CACTUS_ENABLED;  // New option
 
     static {
         BUILDER.push("General Settings");
@@ -72,6 +73,11 @@ public class Config {
                 .comment("If true, nether wart will be affected by fartilization")
                 .define("netherWartEnabled", true);
 
+        // New cactus configuration option.
+        CACTUS_ENABLED = BUILDER
+                .comment("If true, cactus will be affected by fartilization")
+                .define("cactusEnabled", true);
+
         BUILDER.pop();
         SPEC = BUILDER.build();
     }
@@ -79,7 +85,7 @@ public class Config {
     @SubscribeEvent
     public static void onLoad(final ModConfigEvent event) {
         if (event.getConfig().getSpec() == Config.SPEC) {
-            // Custom logic on config load/reload can be added here, not needed currently
+            // Custom logic on config load/reload can be added here if needed.
         }
     }
 }
