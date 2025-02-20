@@ -404,6 +404,17 @@ where to find the applicable terms.
 form of a separately written license, or stated as exceptions;
 the above requirements apply either way.
 
+In addition to the terms of this license, the following restriction
+applies:
+
+Luna Pixel Studios is explicitly prohibited from utilizing, including,
+or distributing this mod in any of their modpacks or any other
+distribution under any circumstances.
+
+This restriction applies to Luna Pixel Studios or any associated entities.
+Any attempt to include or distribute the mod by Luna Pixel Studios,
+directly or indirectly, will be considered a breach of this license.
+
   8. Termination.
 
   You may not propagate or modify a covered work except as expressly
