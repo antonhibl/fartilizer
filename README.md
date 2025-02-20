@@ -32,6 +32,9 @@ This project is licensed under the GPLv3 to protect the creator’s intellectual
 please contact [antonhibl](https://github.com/antonhibl) for any questions related to distribution, forks, or usage
 in modpacks.
 
+One important clause that is explicitly stated in the license is that Luna Pixel Studios may not use this mod in any
+of their modpacks or works under any circumstances.
+
 ---
 
 ## Credits
