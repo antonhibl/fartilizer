@@ -20,6 +20,7 @@ public class Config {
     public static final ForgeConfigSpec.BooleanValue SUGAR_CANE_ENABLED;
     public static final ForgeConfigSpec.BooleanValue BAMBOO_ENABLED;
     public static final ForgeConfigSpec.BooleanValue SWEET_BERRIES_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue KELP_ENABLED;
     public static final ForgeConfigSpec.BooleanValue VINES_ENABLED;
     public static final ForgeConfigSpec.BooleanValue WEEPING_VINES_ENABLED;
     public static final ForgeConfigSpec.BooleanValue TWISTING_VINES_ENABLED;
@@ -56,6 +57,10 @@ public class Config {
         SWEET_BERRIES_ENABLED = BUILDER
                 .comment("If true, sweet berry bushes will be affected by fartilization")
                 .define("sweetBerriesEnabled", true);
+
+        KELP_ENABLED = BUILDER
+                .comment("If true, kelp will be affected by fartilization")
+                .define("kelpEnabled", true);
 
         VINES_ENABLED = BUILDER
                 .comment("If true, regular vines will be affected by fartilization")
