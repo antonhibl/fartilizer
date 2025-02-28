@@ -2,8 +2,6 @@ package com.kuzhcola.fartilizer.event;
 
 import com.kuzhcola.fartilizer.Config;
 import net.minecraft.core.BlockPos;
-// REMOVE or replace this import:
-// import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -11,14 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.BonemealableBlock;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CropBlock;
-import net.minecraft.world.level.block.FlowerBlock;
-import net.minecraft.world.level.block.NetherWartBlock;
-import net.minecraft.world.level.block.SaplingBlock;
-import net.minecraft.world.level.block.SugarCaneBlock;
-import net.minecraft.world.level.block.SweetBerryBushBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -36,11 +27,10 @@ public class PlayerFartilizerHandler {
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        // Process only on the END phase on the server.
+        // Only run on the END phase, server-side.
         if (event.phase != TickEvent.Phase.END) return;
         Player player = event.player;
 
-        // 1) Replace 'player.level.isClientSide' with 'player.level().isClientSide()'
         if (player.level().isClientSide()) return;
 
         UUID uuid = player.getUUID();
@@ -52,18 +42,17 @@ public class PlayerFartilizerHandler {
         int currentTicks = SNEAK_TICK_COUNTERS.getOrDefault(uuid, 0) + 1;
         SNEAK_TICK_COUNTERS.put(uuid, currentTicks);
 
-        // Only trigger the effect after the configured tick threshold.
+        // Wait for configured ticks.
         if (currentTicks < Config.TICKS_PER_FARTILIZATION.get()) {
             return;
         }
-        // Reset the tick counter.
+        // Reset the timer.
         SNEAK_TICK_COUNTERS.put(uuid, 0);
 
-        // 2) Replace 'Level level = player.level;' with 'Level level = player.level();'
         Level level = player.level();
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        // Display smoke particles at the player's location.
+        // Show smoke particles at the player's location.
         serverLevel.sendParticles(
                 ParticleTypes.SMOKE,
                 player.getX(),
@@ -76,17 +65,17 @@ public class PlayerFartilizerHandler {
                 0.01  // speed
         );
 
-        // Play sound if enabled.
+        // Play sound if enabled
         if (Config.SOUND_ENABLED.get()) {
             serverLevel.playSound(
-                    null, // sound is heard by all nearby players
+                    null,
                     player.getX(),
                     player.getY(),
                     player.getZ(),
                     SoundEvents.GENERIC_EXTINGUISH_FIRE,
                     SoundSource.PLAYERS,
-                    0.6F, // volume
-                    1.0F  // pitch
+                    0.6F,
+                    1.0F
             );
         }
 
@@ -96,7 +85,7 @@ public class PlayerFartilizerHandler {
         int pz = player.getBlockZ();
         int horizontalRadius = Config.FARTILIZE_RADIUS.get();
 
-        // Define vertical scan: from 2 blocks below player's feet up to full radius above.
+        // Vertical scan: from 2 below the player up to radius above.
         int yStart = -2;
         int yEnd = horizontalRadius;
 
@@ -106,85 +95,97 @@ public class PlayerFartilizerHandler {
                     BlockPos pos = new BlockPos(px + x, py + yOffset, pz + z);
                     BlockState state = level.getBlockState(pos);
 
-                    // Skip grass blocks.
-                    if (state.is(Blocks.GRASS_BLOCK)) {
-                        continue;
-                    }
-                    // Skip flower blocks.
-                    if (state.getBlock() instanceof FlowerBlock) {
-                        continue;
-                    }
+                    // Skip grass blocks and flowers.
+                    if (state.is(Blocks.GRASS_BLOCK)) continue;
+                    if (state.getBlock() instanceof FlowerBlock) continue;
 
-                    // Handle crops and saplings.
+                    // Crops and saplings
                     if (state.getBlock() instanceof CropBlock || state.getBlock() instanceof SaplingBlock) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
-                            BonemealableBlock bonemealable = (BonemealableBlock) state.getBlock();
-                            if (bonemealable.isValidBonemealTarget(level, pos, state, false)) {
-                                bonemealable.performBonemeal(serverLevel, serverLevel.random, pos, state);
+                            BonemealableBlock growable = (BonemealableBlock) state.getBlock();
+                            if (growable.isValidBonemealTarget(level, pos, state, false)) {
+                                growable.performBonemeal(serverLevel, serverLevel.random, pos, state);
                                 spawnGreenParticles(serverLevel, pos);
                             }
                         }
                     }
-                    // Handle sugarcane.
+                    // Sugar cane
                     else if (Config.SUGAR_CANE_ENABLED.get() && state.is(Blocks.SUGAR_CANE)) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growSugarCane(serverLevel, pos, state);
                         }
                     }
-                    // Handle bamboo.
+                    // Bamboo
                     else if (Config.BAMBOO_ENABLED.get() && state.is(Blocks.BAMBOO)) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growBamboo(serverLevel, pos, state);
                         }
                     }
-                    // Handle sweet berry bushes.
+                    // Sweet berries
                     else if (Config.SWEET_BERRIES_ENABLED.get() && state.getBlock() instanceof SweetBerryBushBlock) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growSweetBerries(serverLevel, pos, state);
                         }
                     }
                     // Handle Ars Nouveau's Sourceberry Bush.
-                    // 3) Replace 'Registry.BLOCK' with 'BuiltInRegistries.BLOCK'
                     else if (BuiltInRegistries.BLOCK.getKey(state.getBlock()) != null &&
                             BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString().equals("ars_nouveau:sourceberry_bush")) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             applySourceberryGrowth(serverLevel, pos, state);
                         }
                     }
-                    // Handle cactus (configurable).
+                    // Cactus
                     else if (Config.CACTUS_ENABLED.get() && state.is(Blocks.CACTUS)) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growCactus(serverLevel, pos, state);
                         }
                     }
+                    // Kelp
                     else if (Config.KELP_ENABLED.get() && state.is(Blocks.KELP)) {
-                        // Handle kelp growth.
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growKelp(serverLevel, pos, state);
                         }
                     }
-                    // Handle regular vines (grow downward).
+                    // Vines
                     else if (Config.VINES_ENABLED.get() && state.is(Blocks.VINE)) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growVine(serverLevel, pos, state);
                         }
                     }
-                    // Handle weeping vines (grow downward).
+                    // Weeping vines
                     else if (Config.WEEPING_VINES_ENABLED.get() && state.is(Blocks.WEEPING_VINES)) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growWeepingVine(serverLevel, pos, state);
                         }
                     }
-                    // Handle twisting vines (grow upward).
+                    // Twisting vines
                     else if (Config.TWISTING_VINES_ENABLED.get() && state.is(Blocks.TWISTING_VINES)) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growTwistingVine(serverLevel, pos, state);
                         }
                     }
-                    // Handle nether wart.
+                    // Nether Wart
                     else if (Config.NETHER_WART_ENABLED.get() && state.is(Blocks.NETHER_WART)) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
                             growNetherWart(serverLevel, pos, state);
+                        }
+                    }
+                    // Melon Stem
+                    else if (Config.MELON_ENABLED.get() && state.is(Blocks.MELON_STEM)) {
+                        if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
+                            growMelonStem(serverLevel, pos, state);
+                        }
+                    }
+                    // Pumpkin Stem
+                    else if (Config.PUMPKIN_ENABLED.get() && state.is(Blocks.PUMPKIN_STEM)) {
+                        if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
+                            growPumpkinStem(serverLevel, pos, state);
+                        }
+                    }
+                    // Cocoa Beans
+                    else if (Config.COCOA_ENABLED.get() && state.is(Blocks.COCOA)) {
+                        if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
+                            growCocoa(serverLevel, pos, state);
                         }
                     }
                 }
@@ -192,16 +193,15 @@ public class PlayerFartilizerHandler {
         }
     }
 
-    // --- Helper Methods ---
+    // === Helper Methods ===
     private void spawnGreenParticles(ServerLevel serverLevel, BlockPos pos) {
-        // Spawn HAPPY_VILLAGER particles to simulate bonemeal effect.
+        // Bonemeal-like effect with HAPPY_VILLAGER particles
         serverLevel.sendParticles(
                 ParticleTypes.HAPPY_VILLAGER,
                 pos.getX() + 0.5,
                 pos.getY() + 1.0,
                 pos.getZ() + 0.5,
-                5,       // particle count
-                0.3, 0.3, 0.3, 0.01 // offsets and speed
+                5, 0.3, 0.3, 0.3, 0.01
         );
     }
 
@@ -223,7 +223,7 @@ public class PlayerFartilizerHandler {
     private void growBamboo(ServerLevel serverLevel, BlockPos pos, BlockState state) {
         if (serverLevel.isEmptyBlock(pos.above())) {
             serverLevel.setBlock(pos.above(), Blocks.BAMBOO.defaultBlockState(), 3);
-            spawnGreenParticles(serverLevel, pos);
+            spawnGreenParticles(serverLevel, pos.above());
         }
     }
 
@@ -237,9 +237,9 @@ public class PlayerFartilizerHandler {
     }
 
     private void applySourceberryGrowth(ServerLevel serverLevel, BlockPos pos, BlockState state) {
-        // Retrieve the "age" property from the block's state definition.
+        // Attempt to increase the "age" property if it exists.
         Property<?> property = state.getBlock().getStateDefinition().getProperty("age");
-        if (property != null && property instanceof IntegerProperty ageProp) {
+        if (property instanceof IntegerProperty ageProp) {
             int age = state.getValue(ageProp);
             if (age < 3) {
                 serverLevel.setBlock(pos, state.setValue(ageProp, age + 1), 3);
@@ -249,49 +249,44 @@ public class PlayerFartilizerHandler {
     }
 
     private void growCactus(ServerLevel serverLevel, BlockPos pos, BlockState state) {
-        // Determine the current height of the cactus column.
         int height = 1;
         BlockPos currentPos = pos.above();
         while (serverLevel.getBlockState(currentPos).is(Blocks.CACTUS) && height < 3) {
             height++;
             currentPos = currentPos.above();
         }
-        // If the cactus column is shorter than 3 and the block above is air, place a new cactus.
         if (height < 3 && serverLevel.isEmptyBlock(currentPos)) {
             serverLevel.setBlock(currentPos, Blocks.CACTUS.defaultBlockState(), 3);
-            spawnGreenParticles(serverLevel, pos);
+            spawnGreenParticles(serverLevel, currentPos);
         }
     }
 
     private void growKelp(ServerLevel serverLevel, BlockPos pos, BlockState state) {
-        // For kelp, check if the block above is water.
         BlockPos abovePos = pos.above();
-        BlockState aboveState = serverLevel.getBlockState(abovePos);
-        if (aboveState.is(Blocks.WATER)) {
-            // Place a new kelp block above.
+        if (serverLevel.getBlockState(abovePos).is(Blocks.WATER)) {
             serverLevel.setBlock(abovePos, Blocks.KELP.defaultBlockState(), 3);
-            spawnGreenParticles(serverLevel, pos);
+            spawnGreenParticles(serverLevel, abovePos);
         }
     }
 
     private void growVine(ServerLevel serverLevel, BlockPos pos, BlockState state) {
         if (serverLevel.isEmptyBlock(pos.below())) {
             serverLevel.setBlock(pos.below(), state, 3);
-            spawnGreenParticles(serverLevel, pos);
+            spawnGreenParticles(serverLevel, pos.below());
         }
     }
 
     private void growWeepingVine(ServerLevel serverLevel, BlockPos pos, BlockState state) {
         if (serverLevel.isEmptyBlock(pos.below())) {
             serverLevel.setBlock(pos.below(), state, 3);
-            spawnGreenParticles(serverLevel, pos);
+            spawnGreenParticles(serverLevel, pos.below());
         }
     }
 
     private void growTwistingVine(ServerLevel serverLevel, BlockPos pos, BlockState state) {
         if (serverLevel.isEmptyBlock(pos.above())) {
             serverLevel.setBlock(pos.above(), state, 3);
-            spawnGreenParticles(serverLevel, pos);
+            spawnGreenParticles(serverLevel, pos.above());
         }
     }
 
@@ -300,6 +295,39 @@ public class PlayerFartilizerHandler {
         int age = state.getValue(ageProp);
         if (age < 3) {
             serverLevel.setBlock(pos, state.setValue(ageProp, age + 1), 3);
+            spawnGreenParticles(serverLevel, pos);
+        }
+    }
+
+    private void growMelonStem(ServerLevel serverLevel, BlockPos pos, BlockState stemState) {
+        // Melon and pumpkin stems share the same class (StemBlock).
+        // They have an "AGE" property from 0 to 7.
+        if (!(stemState.getBlock() instanceof StemBlock stemBlock)) return;
+        IntegerProperty ageProp = StemBlock.AGE;
+        int age = stemState.getValue(ageProp);
+        if (age < 7) {
+            serverLevel.setBlock(pos, stemState.setValue(ageProp, age + 1), 3);
+            spawnGreenParticles(serverLevel, pos);
+        }
+    }
+
+    private void growPumpkinStem(ServerLevel serverLevel, BlockPos pos, BlockState stemState) {
+        if (!(stemState.getBlock() instanceof StemBlock stemBlock)) return;
+        IntegerProperty ageProp = StemBlock.AGE;
+        int age = stemState.getValue(ageProp);
+        if (age < 7) {
+            serverLevel.setBlock(pos, stemState.setValue(ageProp, age + 1), 3);
+            spawnGreenParticles(serverLevel, pos);
+        }
+    }
+
+    private void growCocoa(ServerLevel serverLevel, BlockPos pos, BlockState cocoaState) {
+        // CocoaBlock has an 'AGE' property from 0 to 2.
+        if (!(cocoaState.getBlock() instanceof CocoaBlock cocoaBlock)) return;
+        IntegerProperty ageProp = CocoaBlock.AGE;
+        int age = cocoaState.getValue(ageProp);
+        if (age < 2) {
+            serverLevel.setBlock(pos, cocoaState.setValue(ageProp, age + 1), 3);
             spawnGreenParticles(serverLevel, pos);
         }
     }
