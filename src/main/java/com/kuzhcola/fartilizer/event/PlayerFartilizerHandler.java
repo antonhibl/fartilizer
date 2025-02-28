@@ -170,18 +170,6 @@ public class PlayerFartilizerHandler {
                             growNetherWart(serverLevel, pos, state);
                         }
                     }
-                    // Melon Stem
-                    else if (Config.MELON_ENABLED.get() && state.is(Blocks.MELON_STEM)) {
-                        if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
-                            growMelonStem(serverLevel, pos, state);
-                        }
-                    }
-                    // Pumpkin Stem
-                    else if (Config.PUMPKIN_ENABLED.get() && state.is(Blocks.PUMPKIN_STEM)) {
-                        if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
-                            growPumpkinStem(serverLevel, pos, state);
-                        }
-                    }
                     // Cocoa Beans
                     else if (Config.COCOA_ENABLED.get() && state.is(Blocks.COCOA)) {
                         if (random.nextDouble() < Config.FARTILIZE_CHANCE.get()) {
@@ -295,28 +283,6 @@ public class PlayerFartilizerHandler {
         int age = state.getValue(ageProp);
         if (age < 3) {
             serverLevel.setBlock(pos, state.setValue(ageProp, age + 1), 3);
-            spawnGreenParticles(serverLevel, pos);
-        }
-    }
-
-    private void growMelonStem(ServerLevel serverLevel, BlockPos pos, BlockState stemState) {
-        // Melon and pumpkin stems share the same class (StemBlock).
-        // They have an "AGE" property from 0 to 7.
-        if (!(stemState.getBlock() instanceof StemBlock stemBlock)) return;
-        IntegerProperty ageProp = StemBlock.AGE;
-        int age = stemState.getValue(ageProp);
-        if (age < 7) {
-            serverLevel.setBlock(pos, stemState.setValue(ageProp, age + 1), 3);
-            spawnGreenParticles(serverLevel, pos);
-        }
-    }
-
-    private void growPumpkinStem(ServerLevel serverLevel, BlockPos pos, BlockState stemState) {
-        if (!(stemState.getBlock() instanceof StemBlock stemBlock)) return;
-        IntegerProperty ageProp = StemBlock.AGE;
-        int age = stemState.getValue(ageProp);
-        if (age < 7) {
-            serverLevel.setBlock(pos, stemState.setValue(ageProp, age + 1), 3);
             spawnGreenParticles(serverLevel, pos);
         }
     }
