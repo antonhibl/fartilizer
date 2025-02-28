@@ -25,7 +25,11 @@ public class Config {
     public static final ForgeConfigSpec.BooleanValue WEEPING_VINES_ENABLED;
     public static final ForgeConfigSpec.BooleanValue TWISTING_VINES_ENABLED;
     public static final ForgeConfigSpec.BooleanValue NETHER_WART_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue CACTUS_ENABLED;  // New option
+    public static final ForgeConfigSpec.BooleanValue CACTUS_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue MELON_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue PUMPKIN_ENABLED;
+    public static final ForgeConfigSpec.BooleanValue COCOA_ENABLED;
+
 
     static {
         BUILDER.push("General Settings");
@@ -78,10 +82,21 @@ public class Config {
                 .comment("If true, nether wart will be affected by fartilization")
                 .define("netherWartEnabled", true);
 
-        // New cactus configuration option.
         CACTUS_ENABLED = BUILDER
                 .comment("If true, cactus will be affected by fartilization")
                 .define("cactusEnabled", true);
+
+        MELON_ENABLED = BUILDER
+                .comment("If true, melon stems will be affected by fartilization")
+                .define("melonEnabled", true);
+
+        PUMPKIN_ENABLED = BUILDER
+                .comment("If true, pumpkin stems will be affected by fartilization")
+                .define("pumpkinEnabled", true);
+
+        COCOA_ENABLED = BUILDER
+                .comment("If true, cocoa beans will be affected by fartilization")
+                .define("cocoaEnabled", true);
 
         BUILDER.pop();
         SPEC = BUILDER.build();
